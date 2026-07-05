@@ -241,6 +241,8 @@ int search(SearchThread& thread, int alpha, int beta, int depth, std::list<Move>
 
     std::tie(entry, tt_depth, entry_type, tt_move, tt_static_eval, tt_score) = TT::probe(tt_key, tt_hit, ss->plies);
 
+    tt_move = (root_node && thread.root_depth > 1) ? pv.front() : tt_move;
+
     if (tt_hit)
     {
         if (tt_depth >= depth && !is_pv)
