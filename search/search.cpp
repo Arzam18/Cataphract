@@ -368,7 +368,7 @@ int search(SearchThread& thread, int alpha, int beta, int depth, std::list<Move>
         }
 
         const int prob_beta = beta + probcut_margin() - probcut_scale() * improving;
-        if (const int prob_depth = std::max(depth - 3, 1);
+        if (const int prob_depth = depth - 3 - improving;
             depth >= 6 && std::abs(beta) < mate_in_max_ply &&
             !(tt_hit && tt_depth >= prob_depth && tt_score < prob_beta))
         {
