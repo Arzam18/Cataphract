@@ -16,10 +16,10 @@ struct Options
 enum Values: int
 {
     draw = 0,
-    infinity = 32000,
+    infinity = 32500,
     negative_infinity = -infinity,
-    mate_value = 31999,
+    mate_value = 32499,
     mate_in_max_ply = mate_value - MAX_PLY,
     mated_in_max_ply = -mate_in_max_ply,
-    score_none = -32500
+    score_none = INT16_MIN
 };
