@@ -880,10 +880,7 @@ void start_search(const int depth_param, const int move_time, const int wtime, c
         }
         else best_move = principal_variation.front();
 
-        if (best_thread.id)
-        {
-            print_info(best_thread);
-        }
+        print_info(best_thread);
 
         if (Options::verbose)
         {

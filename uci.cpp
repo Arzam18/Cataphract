@@ -288,7 +288,7 @@ namespace UCI
                 }
                 else if (command == "uci")
                 {
-                    std::println("id name Cataphract 1.5.1");
+                    std::println("id name Cataphract 1.6");
                     std::println("id author masceron\n");
                     std::println("option name Hash type spin default 64 min 1 max 2048");
                     std::println("option name Clear Hash type button");
