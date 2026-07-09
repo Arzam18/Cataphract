@@ -4,41 +4,7 @@
 
 int algebraic_to_num(const std::string_view algebraic)
 {
-    if (algebraic.length() != 2) return -1;
-    int rank = 0;
-    int file = 0;
-    if (algebraic[1] >= '1' && algebraic[1] <= '8') rank = 8 - (algebraic[1] - '0');
-    else return -1;
-    switch (algebraic[0])
-    {
-    case 'a':
-        file = 0;
-        break;
-    case 'b':
-        file = 1;
-        break;
-    case 'c':
-        file = 2;
-        break;
-    case 'd':
-        file = 3;
-        break;
-    case 'e':
-        file = 4;
-        break;
-    case 'f':
-        file = 5;
-        break;
-    case 'g':
-        file = 6;
-        break;
-    case 'h':
-        file = 7;
-        break;
-    default:
-        return -1;
-    }
-    return rank * 8 + file;
+    return (8 - (algebraic[1] - '0')) * 8 + (algebraic[0] - 'a');
 }
 
 const char* num_to_algebraic(const int sq)

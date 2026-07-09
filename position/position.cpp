@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cstring>
 #include <utility>
+#include <bit>
 
 #include "position.hpp"
 #include "cuckoo.hpp"
