@@ -7,18 +7,12 @@ on:
     branches: [ "*" ]
 
 jobs:
-  build-android:
+k  build-android:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-
-    - name: Setup Android NDK
-      uses: android-actions/setup-ndk@v3
-      with:
-        ndk_version: latest
-        local_cache: true
 
     - name: Install Build Tools
       run: |
