@@ -5,7 +5,7 @@
 #include "../search/thread.hpp"
 #include "perft.hpp"
 
-size_t perft(const int depth)
+static size_t perft(const int depth)
 {
     if (depth == 0)
     {

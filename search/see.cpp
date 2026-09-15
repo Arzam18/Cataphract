@@ -7,7 +7,7 @@
 #include "../position/position.hpp"
 #include "../position/move.hpp"
 
-uint64_t attackers_of(const Position& pos, const uint8_t sq, const uint64_t occ)
+static uint64_t attackers_of(const Position& pos, const uint8_t sq, const uint64_t occ)
 {
     const uint64_t target = 1ull << sq;
     const uint64_t diagonal_sliders = pos.boards[b] | pos.boards[B] | pos.boards[Q] | pos.boards[q];
@@ -43,8 +43,8 @@ int value_of(const Piece piece)
     }
 }
 
-uint64_t least_valuable_piece(const Position& pos, const uint64_t attackers, const uint8_t side,
-                              Piece& attacker)
+static uint64_t least_valuable_piece(const Position& pos, const uint64_t attackers, const uint8_t side,
+                                     Piece& attacker)
 {
     const int flip = side == white ? 0 : 8;
     for (int i = P ^ flip; i <= (Q ^ flip); i++)
@@ -58,7 +58,7 @@ uint64_t least_valuable_piece(const Position& pos, const uint64_t attackers, con
     return 0;
 }
 
-uint64_t get_x_ray(const Position& pos, const uint64_t from_set, const uint8_t to, const uint64_t occ)
+static uint64_t get_x_ray(const Position& pos, const uint64_t from_set, const uint8_t to, const uint64_t occ)
 {
     if (const uint8_t from = lsb(from_set); from / 8 == to / 8 || from % 8 == to % 8)
     {

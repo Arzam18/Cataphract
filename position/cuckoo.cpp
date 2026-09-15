@@ -5,7 +5,7 @@
 
 namespace Cuckoo
 {
-    uint64_t np_piece_attacks(const int from, const int to, const Piece piece)
+    static uint64_t np_piece_attacks(const int from, const int to, const Piece piece)
     {
         const uint64_t to_board = 1ull << to;
         switch (type_of(piece))

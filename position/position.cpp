@@ -14,7 +14,7 @@
 #include "../board/lines.hpp"
 #include "../board/slider.hpp"
 
-bool color_of(const Piece piece)
+static bool color_of(const Piece piece)
 {
     return piece >= 6;
 }

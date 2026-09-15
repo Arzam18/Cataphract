@@ -36,7 +36,7 @@ void MoveList::reset()
 }
 
 template <const bool us, const MoveType type, const bool evasive>
-void pawn_move_generator(const Position& cr_pos, Move*& pos)
+static void pawn_move_generator(const Position& cr_pos, Move*& pos)
 {
     const auto ep_square = cr_pos.state->en_passant_square;
     static constexpr bool enemy = !us;
@@ -193,7 +193,7 @@ void pawn_move_generator(const Position& cr_pos, Move*& pos)
 }
 
 template <const bool us, const MoveType type, const PieceType piece, const bool evasive>
-void general_move_generator(const Position& cr_pos, Move*& pos)
+static void general_move_generator(const Position& cr_pos, Move*& pos)
 {
     uint64_t board = 0;
     const uint64_t occ = cr_pos.occupations[us];
@@ -255,7 +255,7 @@ void general_move_generator(const Position& cr_pos, Move*& pos)
 }
 
 template <const bool us, const MoveType type, const bool evasive>
-void king_move_generator(const Position& cr_pos, Move*& pos, const int king)
+static void king_move_generator(const Position& cr_pos, Move*& pos, const int king)
 {
     const uint64_t occ = cr_pos.occupations[us];
     const uint64_t eocc = cr_pos.occupations[!us];
@@ -332,7 +332,7 @@ void king_move_generator(const Position& cr_pos, Move*& pos, const int king)
 }
 
 template <bool us, MoveType type, const bool evasive>
-void move_generator(const Position& cr_pos, Move*& last)
+static void move_generator(const Position& cr_pos, Move*& last)
 {
     if (std::popcount(cr_pos.state->checker) != 2)
     {

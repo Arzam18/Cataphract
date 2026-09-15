@@ -5,7 +5,7 @@
 #include "move.hpp"
 #include "../search/thread.hpp"
 
-void setup_state(State& st)
+static void setup_state(State& st)
 {
     st.captured_piece = nil;
     st.castling_rights = 0;

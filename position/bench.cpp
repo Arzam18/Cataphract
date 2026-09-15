@@ -4,6 +4,7 @@
 #include "../search/search.hpp"
 #include "../search/thread.hpp"
 #include "../engine.hpp"
+#include "bench.hpp"
 
 void run_bench(const int depth, const uint32_t tt_size)
 {

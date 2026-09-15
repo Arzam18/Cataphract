@@ -58,7 +58,7 @@ namespace TT
         current_generation += 8;
     }
 
-    uint64_t index_of(const uint64_t& key)
+    static uint64_t index_of(const uint64_t& key)
     {
         return static_cast<uint64_t>((static_cast<__uint128_t>(key) * static_cast<__uint128_t>(table_size)) >> 64);
     }
