@@ -10,7 +10,7 @@
 #include "transposition.hpp"
 #include "../eval/nnue.hpp"
 
-int quiesce(SearchThread& thread, int alpha, int beta, SearchEntry* ss)
+static int quiesce(SearchThread& thread, int alpha, int beta, SearchEntry* ss)
 {
     ++thread.node_searched;
     if (ss->plies > thread.seldepth)
@@ -181,8 +181,8 @@ int quiesce(SearchThread& thread, int alpha, int beta, SearchEntry* ss)
 }
 
 template <const bool root_node, const bool is_pv>
-int search(SearchThread& thread, int alpha, int beta, int depth, std::list<Move>& pv, const bool cut_node,
-           SearchEntry* ss)
+static int search(SearchThread& thread, int alpha, int beta, int depth, std::list<Move>& pv, const bool cut_node,
+                  SearchEntry* ss)
 {
     ++thread.node_searched;
     if (Timer::is_search_cancelled) return alpha;
@@ -638,7 +638,7 @@ int search(SearchThread& thread, int alpha, int beta, int depth, std::list<Move>
     return best_score;
 }
 
-void print_info(const SearchThread& thread)
+static void print_info(const SearchThread& thread)
 {
     const auto elapsed = Timer::elapsed();
     std::print("info depth {} seldepth {} score ", thread.root_depth, thread.seldepth);
@@ -745,7 +745,7 @@ void thread_search(const int thread_idx, const int search_depth)
     }
 }
 
-SearchThread& thread_vote()
+static SearchThread& thread_vote()
 {
     if (Options::threads == 1) return ThreadPool::get(0);
 

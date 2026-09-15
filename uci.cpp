@@ -20,7 +20,7 @@
 
 namespace UCI
 {
-    void perft(const std::string_view depth)
+    static void perft(const std::string_view depth)
     {
         int depthTo = 0;
         std::from_chars(depth.data(), depth.data() + depth.size(), depthTo);
@@ -28,7 +28,7 @@ namespace UCI
         divide(depthTo);
     }
 
-    void set_option(std::string_view option)
+    static void set_option(std::string_view option)
     {
         auto tokens = option | std::views::split(' ');
         auto it = tokens.begin();
@@ -132,7 +132,7 @@ namespace UCI
         run_bench(depth, tt_size);
     }
 
-    void go(const std::string_view input)
+    static void go(const std::string_view input)
     {
         auto tokens = input | std::views::split(' ');
         auto it = tokens.begin();

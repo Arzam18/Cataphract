@@ -128,11 +128,11 @@ void accumulators_set(const Network& __restrict network, const std::array<uint64
 }
 
 template <const int exclude>
-void accumulators_addsub(const Network& __restrict network, const int16_t* __restrict prev,
-                         int16_t* __restrict accs,
-                         const std::pair<uint8_t, int8_t>* add,
-                         const std::pair<uint8_t, int8_t>* sub, const std::pair<bool, bool>& mirrors,
-                         const std::pair<uint8_t, uint8_t>& buckets)
+static void accumulators_addsub(const Network& __restrict network, const int16_t* __restrict prev,
+                                int16_t* __restrict accs,
+                                const std::pair<uint8_t, int8_t>* add,
+                                const std::pair<uint8_t, int8_t>* sub, const std::pair<bool, bool>& mirrors,
+                                const std::pair<uint8_t, uint8_t>& buckets)
 {
     auto [white_add, black_add] = input_index_of(add[0].first, add[0].second, mirrors);
     auto [white_sub, black_sub] = input_index_of(sub[0].first, sub[0].second, mirrors);
@@ -156,11 +156,11 @@ void accumulators_addsub(const Network& __restrict network, const int16_t* __res
 }
 
 template <const int exclude>
-void accumulators_addsub2(const Network& __restrict network, const int16_t* __restrict prev,
-                          int16_t* __restrict accs,
-                          const std::pair<uint8_t, int8_t>* add,
-                          const std::pair<uint8_t, int8_t>* sub, const std::pair<bool, bool>& mirrors,
-                          const std::pair<uint8_t, uint8_t>& buckets)
+static void accumulators_addsub2(const Network& __restrict network, const int16_t* __restrict prev,
+                                 int16_t* __restrict accs,
+                                 const std::pair<uint8_t, int8_t>* add,
+                                 const std::pair<uint8_t, int8_t>* sub, const std::pair<bool, bool>& mirrors,
+                                 const std::pair<uint8_t, uint8_t>& buckets)
 {
     auto [white_add, black_add] = input_index_of(add[0].first, add[0].second, mirrors);
     auto [white_sub1, black_sub1] = input_index_of(sub[0].first, sub[0].second, mirrors);
@@ -187,12 +187,12 @@ void accumulators_addsub2(const Network& __restrict network, const int16_t* __re
 }
 
 template <const int exclude>
-void accumulators_add2sub2(const Network& __restrict network, const int16_t* __restrict prev,
-                           int16_t* __restrict accs,
-                           const std::pair<uint8_t, int8_t>* add,
-                           const std::pair<uint8_t, int8_t>* sub,
-                           const std::pair<bool, bool>& mirrors,
-                           const std::pair<uint8_t, uint8_t>& buckets
+static void accumulators_add2sub2(const Network& __restrict network, const int16_t* __restrict prev,
+                                  int16_t* __restrict accs,
+                                  const std::pair<uint8_t, int8_t>* add,
+                                  const std::pair<uint8_t, int8_t>* sub,
+                                  const std::pair<bool, bool>& mirrors,
+                                  const std::pair<uint8_t, uint8_t>& buckets
 )
 {
     auto [white_add1, black_add1] = input_index_of(add[0].first, add[0].second, mirrors);
@@ -223,11 +223,11 @@ void accumulators_add2sub2(const Network& __restrict network, const int16_t* __r
 }
 
 template <const int exclude>
-void update_from_move(const Network& __restrict network, int16_t* __restrict prev, int16_t* __restrict cur,
-                      const std::pair<uint8_t, int8_t>* add,
-                      const std::pair<uint8_t, int8_t>* sub,
-                      const std::pair<bool, bool>& mirrors,
-                      const std::pair<uint8_t, uint8_t>& buckets)
+static void update_from_move(const Network& __restrict network, int16_t* __restrict prev, int16_t* __restrict cur,
+                             const std::pair<uint8_t, int8_t>* add,
+                             const std::pair<uint8_t, int8_t>* sub,
+                             const std::pair<bool, bool>& mirrors,
+                             const std::pair<uint8_t, uint8_t>& buckets)
 {
     if (sub[1].second != -1)
     {
