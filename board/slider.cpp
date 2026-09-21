@@ -1,6 +1,9 @@
 #include <bit>
-#include <immintrin.h>
 #include <random>
+
+#ifdef __BMI2__
+#include <immintrin.h>
+#endif
 
 #include "slider.hpp"
 #include "attacks.hpp"
