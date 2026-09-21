@@ -33,6 +33,28 @@ endif ()
 message(STATUS "Cataphract target architecture: ${CATAPHRACT_ARCH}")
 
 # ---------------------------------------------------------------------------
+# Generate net_data.hpp from eval/net.bin.
+# Replaces Clang's #embed, which is unavailable in the NDK r28 toolchain.
+# ---------------------------------------------------------------------------
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
+
+set(CATAPHRACT_NET_HEADER "${CMAKE_CURRENT_BINARY_DIR}/net_data.hpp")
+
+add_custom_command(
+    OUTPUT  ${CATAPHRACT_NET_HEADER}
+    COMMAND ${Python3_EXECUTABLE}
+            ${CMAKE_SOURCE_DIR}/tools/bin2header.py
+            ${CMAKE_SOURCE_DIR}/eval/net.bin
+            ${CATAPHRACT_NET_HEADER}
+    DEPENDS ${CMAKE_SOURCE_DIR}/eval/net.bin
+            ${CMAKE_SOURCE_DIR}/tools/bin2header.py
+    COMMENT "Generating net_data.hpp from eval/net.bin"
+    VERBATIM
+)
+
+add_custom_target(net_data DEPENDS ${CATAPHRACT_NET_HEADER})
+
+# ---------------------------------------------------------------------------
 # Sources
 # ---------------------------------------------------------------------------
 add_executable(Cataphract main.cpp
@@ -96,14 +118,15 @@ add_executable(Cataphract main.cpp
         eval/simd/scalar.cpp
 )
 
+add_dependencies(Cataphract net_data)
+target_include_directories(Cataphract PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+
 if (ENABLE_TUNING)
     target_compile_definitions(Cataphract PRIVATE SPSA_TUNE)
 endif ()
 
 # ---------------------------------------------------------------------------
-# Android / NDK build path
-# Returns early so the Linux/GCC/MSVC sections below (which use -static,
-# -lstdc++exp, -march=native, etc.) never run on Android.
+# Android / NDK build path — returns early so Linux-only flags never apply.
 # ---------------------------------------------------------------------------
 if (ANDROID)
     target_compile_options(Cataphract PRIVATE
@@ -116,8 +139,6 @@ if (ANDROID)
     target_compile_definitions(Cataphract PRIVATE NDEBUG)
 
     if (CATAPHRACT_ARCH STREQUAL "arm64")
-        # ARMv8.2-A + dot-product + fp16 — supported by essentially every
-        # phone from ~2018 onward. Drop the extensions if you need older chips.
         target_compile_options(Cataphract PRIVATE -march=armv8.2-a+dotprod+fp16)
     elseif (CATAPHRACT_ARCH STREQUAL "arm32")
         target_compile_options(Cataphract PRIVATE
