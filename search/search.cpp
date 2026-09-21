@@ -824,7 +824,7 @@ template <bool silent>
 void start_search(const int depth_param, const int move_time, const int wtime, const int btime,
                   const int winc, const int binc, const int moves_to_go, uint32_t nodes)
 {
-    std::vector<std::jthread> searchers;
+    std::vector<std::thread> searchers;
     searchers.reserve(Options::threads);
 
     time_manager = {};
