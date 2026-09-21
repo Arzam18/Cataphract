@@ -44,9 +44,9 @@ add_custom_command(
     OUTPUT  ${CATAPHRACT_NET_HEADER}
     COMMAND ${Python3_EXECUTABLE}
             ${CMAKE_SOURCE_DIR}/tools/bin2header.py
-            ${CMAKE_SOURCE_DIR}/eval/net.bin
+            ${CMAKE_SOURCE_DIR}/net.bin
             ${CATAPHRACT_NET_HEADER}
-    DEPENDS ${CMAKE_SOURCE_DIR}/eval/net.bin
+    DEPENDS ${CMAKE_SOURCE_DIR}/net.bin
             ${CMAKE_SOURCE_DIR}/tools/bin2header.py
     COMMENT "Generating net_data.hpp from eval/net.bin"
     VERBATIM
