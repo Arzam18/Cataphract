@@ -16,16 +16,16 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-          lfs: true
+          lfs: true          # remove this line if net.bin is not tracked by Git LFS
 
       - name: Verify net.bin
         run: |
-          ls -la eval/net.bin
-          test -s eval/net.bin || { echo "eval/net.bin is empty"; exit 1; }
-          size=$(stat -c%s eval/net.bin)
+          ls -la net.bin
+          test -s net.bin || { echo "net.bin is empty"; exit 1; }
+          size=$(stat -c%s net.bin)
           echo "net.bin size: $size bytes"
           if [ "$size" -lt 100000 ]; then
-            echo "eval/net.bin is suspiciously small — likely a Git LFS pointer"; exit 1
+            echo "net.bin is suspiciously small — likely a Git LFS pointer"; exit 1
           fi
 
       - name: Install NDK r28
