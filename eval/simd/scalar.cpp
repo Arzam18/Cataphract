@@ -1,4 +1,5 @@
-#if !defined(__AVX512F__) && !defined(__AVX2__)
+#if !defined(__AVX512F__) && !defined(__AVX2__) && \
+    !defined(__ARM_NEON) && !defined(__ARM_NEON__)
 
 #include <algorithm>
 
