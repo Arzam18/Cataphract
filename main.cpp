@@ -8,14 +8,12 @@ int main(const int argc, char* argv[])
 
     if (argc > 1 && std::string_view(argv[1]) == "bench")
     {
-        const std::string bench_args = std::span(argv, argc)
-            | std::views::drop(1)
-            | std::views::transform([](const char* ptr)
-            {
-                return std::string_view(ptr);
-            })
-            | std::views::join_with(' ')
-            | std::ranges::to<std::string>();
+        std::string bench_args;
+        for (int i = 1; i < argc; ++i)
+        {
+            if (i > 1) bench_args += ' ';
+            bench_args += argv[i];
+        }
 
         UCI::bench(bench_args);
         return 0;
