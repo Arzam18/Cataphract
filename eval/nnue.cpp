@@ -8,11 +8,16 @@
 #include "utils.hpp"
 #include "../position/position.hpp"
 
+// net_data.hpp is generated at configure time by tools/bin2header.py.
+// It expands to a comma-separated list of the bytes in eval/net.bin.
 SIMD_ALIGN inline static constexpr unsigned char data[] = {
-#embed "../net.bin"
+#include "net_data.hpp"
 };
 
 static const Network& network = *reinterpret_cast<const Network*>(data);
+
+// ... the rest of nnue.cpp (update_accumulators, refresh_accumulators,
+//     evaluate, eval) stays exactly as it is.
 
 void update_accumulators(AccumulatorStack& accumulator_stack)
 {
