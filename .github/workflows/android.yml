@@ -12,9 +12,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           submodules: recursive
+          lfs: true
+
+      - name: Verify net.bin
+        run: |
+          ls -la eval/net.bin
+          test -s eval/net.bin || { echo "eval/net.bin is empty"; exit 1; }
+          size=$(stat -c%s eval/net.bin)
+          echo "net.bin size: $size bytes"
+          if [ "$size" -lt 100000 ]; then
+            echo "eval/net.bin is suspiciously small — likely a Git LFS pointer"; exit 1
+          fi
 
       - name: Install NDK r28
         uses: nttld/setup-ndk@v1
