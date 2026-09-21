@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-          lfs: true          # remove this line if net.bin is not tracked by Git LFS
+          lfs: true          # remove if net.bin is not tracked by Git LFS
 
       - name: Verify net.bin
         run: |
@@ -27,6 +27,15 @@ jobs:
           if [ "$size" -lt 100000 ]; then
             echo "net.bin is suspiciously small — likely a Git LFS pointer"; exit 1
           fi
+
+      - name: Patch C++26-only std::println() for NDK r28 libc++
+        run: |
+          find . -type f \( -name '*.cpp' -o -name '*.hpp' \) \
+            -not -path './build-*' -not -path './.git/*' \
+            -exec sed -i 's/std::println();/std::println("");/g' {} +
+          echo "Remaining std::println() with no args:"
+          grep -rn 'std::println()' --include='*.cpp' --include='*.hpp' . \
+            || echo "  (none)"
 
       - name: Install NDK r28
         uses: nttld/setup-ndk@v1
