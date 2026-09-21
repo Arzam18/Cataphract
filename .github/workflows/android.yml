@@ -8,31 +8,13 @@ on:
 
 jobs:
   build:
-    name: Build ${{ matrix.abi }}
+    name: Build arm64-v8a
     runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - abi: arm64-v8a
-            api: 28
-          - abi: armeabi-v7a
-            api: 28
 
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
 
       - name: Install NDK r28
         uses: nttld/setup-ndk@v1
@@ -45,22 +27,22 @@ jobs:
         env:
           NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
-          cmake -S . -B build-${{ matrix.abi }} \
+          cmake -S . -B build-arm64 \
             -DCMAKE_TOOLCHAIN_FILE="$NDK/build/cmake/android.toolchain.cmake" \
-            -DANDROID_ABI=${{ matrix.abi }} \
-            -DANDROID_PLATFORM=android-${{ matrix.api }} \
+            -DANDROID_ABI=arm64-v8a \
+            -DANDROID_PLATFORM=android-28 \
             -DANDROID_STL=c++_static \
             -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
-        run: cmake --build build-${{ matrix.abi }} --config Release -j"$(nproc)"
+        run: cmake --build build-arm64 --config Release -j"$(nproc)"
 
       - name: Inspect binary
-        run: file build-${{ matrix.abi }}/Cataphract
+        run: file build-arm64/Cataphract
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Cataphract-${{ matrix.abi }}
-          path: build-${{ matrix.abi }}/Cataphract
+          name: Cataphract-arm64-v8a
+          path: build-arm64/Cataphract
           if-no-files-found: error
