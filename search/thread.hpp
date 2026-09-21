@@ -44,7 +44,7 @@ struct ThreadPool
     static inline std::deque<SearchThread> threads{1};
     static inline std::deque<State> states{};
 
-    static inline std::vector<std::jthread> os_threads;
+    static inline std::vector<std::thread> os_threads;
     static inline std::mutex mtx;
     static inline std::condition_variable cv_start;
     static inline std::condition_variable cv_end;
