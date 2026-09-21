@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.30)
 project(Cataphract LANGUAGES CXX)
 
 if (NOT CMAKE_BUILD_TYPE)
@@ -12,7 +12,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 option(ENABLE_TUNING "Build with SPSA tuning hooks enabled" OFF)
 
 # ---------------------------------------------------------------------------
-# Detect ARM vs x86 for Android / native ARM flags
+# Architecture detection (Android ABIs + native ARM + native x86)
 # ---------------------------------------------------------------------------
 if (ANDROID)
     if (CMAKE_ANDROID_ARCH_ABI STREQUAL "arm64-v8a")
@@ -32,6 +32,9 @@ endif ()
 
 message(STATUS "Cataphract target architecture: ${CATAPHRACT_ARCH}")
 
+# ---------------------------------------------------------------------------
+# Sources
+# ---------------------------------------------------------------------------
 add_executable(Cataphract main.cpp
         board/bitboard.hpp
         board/slider.hpp
@@ -93,26 +96,28 @@ add_executable(Cataphract main.cpp
         eval/simd/scalar.cpp
 )
 
-if(ENABLE_TUNING)
+if (ENABLE_TUNING)
     target_compile_definitions(Cataphract PRIVATE SPSA_TUNE)
-endif()
+endif ()
 
 # ---------------------------------------------------------------------------
-# Android / NDK path — return early, x86/`-static`/`-lstdc++exp` flags below
-# don't apply here.
+# Android / NDK build path
+# Returns early so the Linux/GCC/MSVC sections below (which use -static,
+# -lstdc++exp, -march=native, etc.) never run on Android.
 # ---------------------------------------------------------------------------
 if (ANDROID)
     target_compile_options(Cataphract PRIVATE
+        -std=c++26
         -O3 -DNDEBUG
-        -Wall -Wextra -Wno-class-memaccess
+        -Wall -Wextra
         -fno-exceptions -fno-rtti
         -ffunction-sections -fdata-sections
     )
     target_compile_definitions(Cataphract PRIVATE NDEBUG)
 
     if (CATAPHRACT_ARCH STREQUAL "arm64")
-        # ARMv8.2-A + dot-product + fp16: broadly supported from ~2018 onward.
-        # If you need to support older arm64 chips, drop the +dotprod+fp16.
+        # ARMv8.2-A + dot-product + fp16 — supported by essentially every
+        # phone from ~2018 onward. Drop the extensions if you need older chips.
         target_compile_options(Cataphract PRIVATE -march=armv8.2-a+dotprod+fp16)
     elseif (CATAPHRACT_ARCH STREQUAL "arm32")
         target_compile_options(Cataphract PRIVATE
@@ -125,7 +130,7 @@ if (ANDROID)
 endif ()
 
 # ---------------------------------------------------------------------------
-# Native ARM Linux — same NEON flags but with host toolchain
+# Native ARM (Linux) — same NEON flags, host toolchain
 # ---------------------------------------------------------------------------
 if (CATAPHRACT_ARCH STREQUAL "arm64")
     target_compile_options(Cataphract PRIVATE -march=armv8.2-a+dotprod+fp16)
@@ -133,4 +138,72 @@ elseif (CATAPHRACT_ARCH STREQUAL "arm32")
     target_compile_options(Cataphract PRIVATE -mfpu=neon)
 endif ()
 
-# --- keep your existing GCC / Clang / MSVC block here, unchanged ---
+# ---------------------------------------------------------------------------
+# Native Linux / macOS
+# ---------------------------------------------------------------------------
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_link_libraries(Cataphract PRIVATE "-lstdc++exp")
+
+    if (CMAKE_BUILD_TYPE MATCHES "Debug")
+        target_compile_options(Cataphract PRIVATE
+                -O0 -Wall -Wextra -Wno-class-memaccess -g -march=native -fno-omit-frame-pointer
+        )
+
+    elseif (CMAKE_BUILD_TYPE MATCHES "Release")
+        target_compile_options(Cataphract PRIVATE
+                -Wall -Wextra -Wno-class-memaccess -DNDEBUG -fno-exceptions
+                -ffunction-sections -fdata-sections -fno-rtti
+                -O3 -flto=auto -fipa-pta
+                -march=native -mtune=native
+        )
+        target_compile_definitions(Cataphract PRIVATE NDEBUG)
+        target_link_options(Cataphract PRIVATE
+                -flto=auto -static -s
+                -Wl,--gc-sections
+        )
+    endif ()
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    if (CMAKE_BUILD_TYPE MATCHES "Debug")
+        target_compile_options(Cataphract PRIVATE -O0 -Wextra -g -march=native -fno-exceptions
+                -fno-omit-frame-pointer
+                -fsanitize=undefined -fsanitize=implicit-integer-truncation
+                -fsanitize=implicit-integer-arithmetic-value-change -fsanitize=implicit-integer-conversion
+                -fsanitize=implicit-conversion -fsanitize=signed-integer-overflow
+                -fsanitize=nullability -fsanitize=local-bounds
+                -fsanitize=float-divide-by-zero -fsanitize=integer-divide-by-zero
+                -fsanitize=implicit-unsigned-integer-truncation -fsanitize=implicit-signed-integer-truncation
+                -fsanitize=implicit-integer-sign-change
+                -fsanitize=thread
+                -fno-sanitize=shift
+                -Wno-c23-extensions
+        )
+        target_link_options(Cataphract PRIVATE
+                -fsanitize=undefined -fsanitize=implicit-integer-truncation
+                -fsanitize=implicit-integer-arithmetic-value-change -fsanitize=implicit-integer-conversion
+                -fsanitize=implicit-conversion -fsanitize=signed-integer-overflow
+                -fsanitize=nullability -fsanitize=local-bounds
+                -fsanitize=float-divide-by-zero -fsanitize=integer-divide-by-zero
+                -fsanitize=implicit-unsigned-integer-truncation -fsanitize=implicit-signed-integer-truncation
+                -fsanitize=implicit-integer-sign-change
+                -fsanitize=thread
+                -fno-sanitize=shift
+                -fuse-ld=lld
+        )
+
+    elseif (CMAKE_BUILD_TYPE MATCHES "Release")
+        target_compile_options(Cataphract PRIVATE
+                -Wall -Wextra -DNDEBUG
+                -O3 -flto=full -fno-exceptions -march=native -mtune=native -fomit-frame-pointer
+                -ffunction-sections -fdata-sections -fexperimental-library -fno-rtti
+                -Wno-c23-extensions
+        )
+        target_compile_definitions(Cataphract PRIVATE NDEBUG)
+        target_link_options(Cataphract PRIVATE
+                -flto=full -static -s
+                -fuse-ld=lld
+                -Wl,--gc-sections -Wl,--icf=all
+        )
+    endif ()
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    message(FATAL_ERROR "MSVC not supported.")
+endif ()
