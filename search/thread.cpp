@@ -38,6 +38,10 @@ void ThreadPool::resize()
     {
         exit_flag = true;
         cv_start.notify_all();
+        for (auto& t : os_threads)
+        {
+            if (t.joinable()) t.join();
+        }
         os_threads.clear();
         exit_flag = false;
     }
@@ -61,7 +65,6 @@ void ThreadPool::resize()
     start_workers(WorkerTask::Refresh);
     wait_for_workers();
 }
-
 void ThreadPool::start_workers(const WorkerTask task)
 {
     std::unique_lock lock(mtx);
@@ -165,6 +168,10 @@ void ThreadPool::shutdown()
     {
         exit_flag = true;
         cv_start.notify_all();
+        for (auto& t : os_threads)
+        {
+            if (t.joinable()) t.join();
+        }
         os_threads.clear();
     }
 }
