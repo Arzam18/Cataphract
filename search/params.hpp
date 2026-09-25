@@ -40,8 +40,8 @@ void prune_cal();
     PARAM(double, stable_base_scale, 2.0, 1.2, 3.5, 0.115) \
     PARAM(double, stable_scale, 0.13, 0.01, 0.25, 0.012) \
     PARAM(int, score_diff_scale, 156, 100, 300, 10) \
-    PARAM(int, piece_to_history_weight, 418, 256, 2048, 96) \
-    PARAM(int, butterfly_history_weight, 909, 256, 2048, 96) \
+    PARAM(int, butterfly_history_weight, 418, 256, 2048, 96) \
+    PARAM(int, piece_to_history_weight, 909, 256, 2048, 96) \
     PARAM(int, counter_move_weight, 1170, 256, 2048, 96) \
     PARAM(int, follow_up_weight, 1271, 256, 2048, 96) \
     PARAM(int, four_plies_weight, 749, 256, 2048, 96) \
