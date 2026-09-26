@@ -207,9 +207,9 @@ void MovePicker::score_history(const int start_idx, const int end_idx)
         const int moved = pos.piece_on[from] & 7;
 
         scores[i] = history.butterfly_history.table[pos.side_to_move][from][to] *
-            piece_to_history_weight() / 1024
-            + history.piece_to_history.table[pos.side_to_move][moved][to] *
             butterfly_history_weight() / 1024
+            + history.piece_to_history.table[pos.side_to_move][moved][to] *
+            piece_to_history_weight() / 1024
             + history.continuation.continuation_table[0][pos.side_to_move][prev >> 6 & 7][prev & 0b111111][moved][to] *
             counter_move_weight() / 1024
             + history.continuation.continuation_table[1][pos.side_to_move][prev2 >> 6 & 7][prev2 & 0b111111][moved][to] *
